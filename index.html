@@ -558,15 +558,26 @@
             .header { max-width: 984px; margin-bottom: 12px; }
             .header-title { font-size: 32px; }
             .game-layout {
+                position: relative;
                 display: grid;
                 grid-template-columns: 400px 484px;
                 align-items: center;
-                gap: 28px;
+                gap: 56px;
                 padding: 24px 44px 24px 28px;
                 border: 1px solid var(--panel-border);
                 border-radius: 20px;
                 background: var(--panel-bg);
                 box-shadow: var(--panel-shadow);
+            }
+            .game-layout::after {
+                content: '';
+                position: absolute;
+                top: 34px;
+                bottom: 34px;
+                left: 457px;
+                width: 1px;
+                background: linear-gradient(to bottom, transparent, var(--panel-border) 18%, var(--panel-border) 82%, transparent);
+                pointer-events: none;
             }
             .game-board { gap: 4px; margin-bottom: 0; }
             .tile { width: 44px; height: 44px; font-size: 23px; }
