@@ -22,11 +22,15 @@
             --btn-bg: #818384;
             --btn-hover: #9e9e9e;
             --icon-btn-hover: rgba(255, 255, 255, 0.1);
-            --clear-btn-bg: #818384;
-            --clear-btn-hover: #9e9e9e;
+            --clear-btn-bg: transparent;
+            --clear-btn-hover: rgba(255, 255, 255, 0.1);
             --floating-bg: rgba(32, 32, 32, 0.9);
+            --floating-text: #ffffff;
             --floating-success-bg: rgba(106, 170, 100, 0.85);
             --floating-error-bg: rgba(255, 107, 107, 0.85);
+            --panel-bg: rgba(255, 255, 255, 0.035);
+            --panel-border: rgba(255, 255, 255, 0.09);
+            --panel-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
         }
 
         body.light {
@@ -48,9 +52,13 @@
             --icon-btn-hover: rgba(0, 0, 0, 0.1);
             --clear-btn-bg: #f4f4f4;
             --clear-btn-hover: #d3d3d3;
-            --floating-bg: rgba(255, 255, 255, 0.9);
+            --floating-bg: rgba(40, 40, 40, 0.92);
+            --floating-text: #ffffff;
             --floating-success-bg: rgba(106, 170, 100, 0.9);
             --floating-error-bg: rgba(255, 107, 107, 0.9);
+            --panel-bg: #ffffff;
+            --panel-border: rgba(0, 0, 0, 0.08);
+            --panel-shadow: 0 18px 50px rgba(0, 0, 0, 0.09);
         }
 
         *, *::before, *::after {
@@ -121,6 +129,13 @@
             margin-bottom: 20px;
         }
 
+        .game-layout,
+        .play-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         /* .row {
             display: grid;
             grid-template-columns: 40px repeat(5, 46px) auto;
@@ -141,10 +156,11 @@
 
         .side-left,
         .side-right {
-            width: 70px; /* 或你希望的任意固定宽度 */
+            width: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 4px;
         }
 
         .row-left {
@@ -250,10 +266,10 @@
         .tile.locked::after {
             content: "";
             position: absolute;
-            top: 0px;
-            right: 0px;
-            width: 16px;
-            height: 16px;
+            top: 1px;
+            right: 1px;
+            width: 13px;
+            height: 13px;
             background-color:  var(--tile-locked-bg);
             border-radius: 1px;
             mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='white' d='M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5M9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9zm4 10.723V20h-2v-2.277a1.993 1.993 0 0 1 .567-3.677A2 2 0 0 1 14 16a1.99 1.99 0 0 1-1 1.723'/></svg>") center / contain no-repeat;
@@ -342,6 +358,18 @@
             margin-top: 20px;
         }
 
+        .surrender-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .surrender-btn svg {
+            flex: 0 0 auto;
+            fill: #fff;
+        }
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -362,8 +390,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: var(--floating-bg);
-            /*color: var(--text-color);*/
-            color: #ffffff !important;
+            color: var(--floating-text);
             padding: 16px 24px;
             font-size: 20px;
             border-radius: 12px;
@@ -373,9 +400,11 @@
         }
         .floating-message.success {
             background-color: var(--floating-success-bg);
+            color: #fff;
         }
         .floating-message.error {
             background-color: var(--floating-error-bg);
+            color: #fff;
         }
 
         @keyframes floatInOut {
@@ -415,6 +444,8 @@
 
         .stats-dialog {
             width: min(440px, calc(100vw - 32px));
+            max-height: calc(100dvh - 32px);
+            overflow-y: auto;
             border: 1px solid var(--tile-border);
             border-radius: 14px;
             padding: 0;
@@ -425,22 +456,66 @@
         .stats-dialog::backdrop { background: rgba(0, 0, 0, 0.62); }
         .stats-content { padding: 22px; }
         .stats-header { display: flex; align-items: center; justify-content: space-between; }
-        .stats-header h2, .stats-history h3 { margin: 0; }
+        .stats-header h2, .stats-history h3, .stats-distribution h3 { margin: 0; }
         .stats-close { font-size: 25px; line-height: 1; }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 22px 0; }
         .stat { text-align: center; }
         .stat-value { display: block; font-size: 28px; font-weight: bold; }
         .stat-label { display: block; color: #888; font-size: 12px; margin-top: 4px; }
-        .stats-history { border-top: 1px solid var(--tile-border); padding-top: 18px; }
-        .history-list { list-style: none; padding: 0; margin: 12px 0 18px; max-height: 220px; overflow-y: auto; }
-        .history-list li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--tile-border); }
+        .stats-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 8px; background: var(--icon-btn-hover); }
+        .stats-tab { padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--text-color); cursor: pointer; font-weight: bold; }
+        .stats-tab.active { background: var(--btn-bg); color: #fff; }
+        .stats-tab-panel { padding-top: 18px; }
+        .stats-tab-panel[hidden] { display: none; }
+        .stats-distribution { padding-bottom: 4px; }
+        .distribution-chart { display: grid; gap: 7px; margin-top: 14px; }
+        .distribution-row { display: grid; grid-template-columns: 44px 1fr 28px; align-items: center; gap: 8px; font-size: 12px; }
+        .distribution-label { color: #888; text-align: right; }
+        .distribution-track { height: 16px; overflow: hidden; border-radius: 3px; background: var(--icon-btn-hover); }
+        .distribution-bar { height: 100%; min-width: 0; border-radius: 3px; background: var(--correct-color); }
+        .distribution-row.loss .distribution-bar { background: var(--floating-error-bg); }
+        .distribution-count { font-weight: bold; text-align: right; }
+        .stats-history { padding-bottom: 1px; }
+        .history-list { list-style: none; padding: 0; margin: 12px 0 18px; max-height: 320px; overflow-y: auto; }
+        .history-list > li { padding: 8px 0; border-bottom: 1px solid var(--tile-border); }
+        .history-entry summary { display: flex; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; }
+        .history-entry summary::-webkit-details-marker { display: none; }
+        .history-entry summary::before { content: '›'; flex: 0 0 auto; transition: transform 0.15s; }
+        .history-entry[open] summary::before { transform: rotate(90deg); }
+        .history-summary-main { flex: 1; }
+        .history-summary-meta { color: #888; white-space: nowrap; }
+        .history-details { margin: 10px 0 2px 18px; padding: 10px; border-radius: 8px; background: var(--icon-btn-hover); }
+        .history-marker-note { margin: 0 0 10px; color: #888; font-size: 11px; line-height: 1.45; }
+        .history-guess { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
+        .history-guess:last-of-type { margin-bottom: 10px; }
+        .history-tile { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 25px; height: 25px; border: 1px solid var(--tile-border); border-radius: 3px; font-size: 12px; font-weight: bold; }
+        .history-tile.correct { background: var(--correct-color); border-color: var(--correct-color); color: #fff; }
+        .history-tile.present { background: var(--present-color); border-color: var(--present-color); color: #fff; }
+        .history-tile.absent { background: var(--absent-color); border-color: var(--absent-color); color: #fff; }
+        .history-tile.locked { box-shadow: inset 0 0 0 2px var(--tile-locked-bg); }
+        .history-score { display: flex; gap: 4px; margin-left: auto; }
+        .history-score-box { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 3px; color: #fff; font-size: 12px; font-weight: bold; }
+        .history-score-box.correct { background: var(--correct-color); }
+        .history-score-box.present { background: var(--present-color); }
+        .history-detail-cleared { margin: 0; color: #888; }
+        .history-detail-clear { padding: 6px 9px; border: 0; border-radius: 4px; background: var(--btn-bg); color: var(--text-color); cursor: pointer; font-size: 12px; }
         .history-empty { color: #888; text-align: center; }
-        .danger-btn { width: 100%; background: #b00020; color: #fff; }
+        .danger-btn {
+            width: 100%;
+            margin-top: 18px;
+            margin-bottom: 4px;
+            background: #b00020;
+            color: #fff;
+        }
+        .help-list { margin: 20px 0 4px; padding-left: 22px; line-height: 1.55; }
+        .help-list li { margin-bottom: 10px; }
+        .help-note { margin: 16px 0 0; padding: 12px; border-radius: 8px; background: var(--icon-btn-hover); line-height: 1.45; }
 
         @media (max-width: 560px) {
             body { padding: 12px 4px; }
             .header { margin-bottom: 12px; }
-            .side-left, .side-right { width: 58px; }
+            .side-left, .side-right { width: 72px; }
+            .header .icon-btn { padding: 4px; }
             .row { gap: 4px; }
             .tile { width: min(42px, 14.5vw); height: min(42px, 14.5vw); }
             .score-box { width: 27px; height: 27px; font-size: 14px; }
@@ -478,6 +553,30 @@
             .btn { padding-top: 6px; padding-bottom: 6px; }
         }
 
+        @media (min-width: 1100px) {
+            body { padding: 16px 20px; }
+            .header { max-width: 984px; margin-bottom: 12px; }
+            .header-title { font-size: 32px; }
+            .game-layout {
+                display: grid;
+                grid-template-columns: 400px 484px;
+                align-items: center;
+                gap: 28px;
+                padding: 24px 44px 24px 28px;
+                border: 1px solid var(--panel-border);
+                border-radius: 20px;
+                background: var(--panel-bg);
+                box-shadow: var(--panel-shadow);
+            }
+            .game-board { gap: 4px; margin-bottom: 0; }
+            .tile { width: 44px; height: 44px; font-size: 23px; }
+            .keyboard { gap: 8px; }
+            .keyboard-row { gap: 6px; }
+            .key { height: 56px; }
+            .controls { margin-top: 18px; }
+            .btn { padding-top: 10px; padding-bottom: 10px; }
+        }
+
         .error {
             color: #ff6b6b;
         }
@@ -495,6 +594,14 @@
                     <path fill="currentColor" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m0 16H5V5h14zM9 17H7V7h2zm4 0h-2v-7h2zm4 0h-2v-5h2z"/>
                 </svg>
             </button>
+            <button class="icon-btn" onclick="showHelp()" aria-label="How to Play" title="How to Play">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0m9 5v.01"/>
+                        <path d="M12 13.5a1.5 1.5 0 0 1 1-1.5a2.6 2.6 0 1 0-3-4"/>
+                    </g>
+                </svg>
+            </button>
         </div>
 
         <h1 class="header-title">HARDLE</h1>
@@ -508,9 +615,11 @@
         </div>
     </div>
 
-    <div class="game-board" id="gameBoard"></div>
+    <main class="game-layout">
+        <div class="game-board" id="gameBoard"></div>
 
-    <div class="keyboard" id="keyboard">
+        <section class="play-panel" aria-label="Game controls">
+        <div class="keyboard" id="keyboard">
         <div class="keyboard-row">
             <button class="key" data-key="Q">Q</button>
             <button class="key" data-key="W">W</button>
@@ -551,15 +660,23 @@
         </div>
     </div>
 
-    <div class="controls">
+        <div class="controls">
         <button class="btn" onclick="undo()">Undo</button>
         <button class="btn" onclick="resetColors()">Reset Colors</button>
+        <button class="btn surrender-btn" onclick="surrender()" aria-label="Surrender" title="Surrender">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 2h2v20H5V2zm3 2h11l-2.4 4L19 12H8V4z"/>
+            </svg>
+            <span>Surrender</span>
+        </button>
         <button class="btn" onclick="newGame()" tabindex="-1">New Game</button>
-    </div>
+        </div>
 
-    <div id="solution" style="margin-top: 10px; font-weight: bold; font-size: 18px;"></div>
+        <div id="solution" style="margin-top: 10px; font-weight: bold; font-size: 18px;"></div>
 
-    <div class="message" id="message"></div>
+        <div class="message" id="message"></div>
+        </section>
+    </main>
 
     <dialog class="stats-dialog" id="statsDialog" aria-labelledby="statsTitle">
         <div class="stats-content">
@@ -573,11 +690,33 @@
                 <div class="stat"><span class="stat-value" id="statStreak">0</span><span class="stat-label">Streak</span></div>
                 <div class="stat"><span class="stat-value" id="statBest">0</span><span class="stat-label">Best</span></div>
             </div>
-            <div class="stats-history">
-                <h3>Recent games</h3>
-                <ul class="history-list" id="historyList"></ul>
+            <div class="stats-tabs" role="tablist" aria-label="统计内容">
+                <button class="stats-tab active" id="distributionTab" role="tab" aria-selected="true" aria-controls="distributionPanel" data-stats-tab="distribution">胜负分布</button>
+                <button class="stats-tab" id="historyTab" role="tab" aria-selected="false" aria-controls="historyPanel" data-stats-tab="history">历史记录</button>
             </div>
+            <section class="stats-tab-panel stats-distribution" id="distributionPanel" role="tabpanel" aria-labelledby="distributionTab">
+                <div class="distribution-chart" id="distributionChart" aria-label="每轮获胜与失败次数条形图"></div>
+            </section>
+            <section class="stats-tab-panel stats-history" id="historyPanel" role="tabpanel" aria-labelledby="historyTab" hidden>
+                <ul class="history-list" id="historyList"></ul>
+            </section>
             <button class="btn danger-btn" id="clearDataButton">Clear save &amp; statistics</button>
+        </div>
+    </dialog>
+
+    <dialog class="stats-dialog help-dialog" id="helpDialog" aria-labelledby="helpTitle">
+        <div class="stats-content">
+            <div class="stats-header">
+                <h2 id="helpTitle">How to Play</h2>
+                <button class="icon-btn stats-close" id="helpClose" aria-label="Close help">&times;</button>
+            </div>
+            <ol class="help-list">
+                <li>这是 Wordle 的加强版游戏，你需要在最多十次有效猜测内找出隐藏的五字母单词。</li>
+                <li>每次猜测后，<strong>绿色数字</strong>表示位置正确的字母数量，<strong>黄色数字</strong>表示单词中存在但位置错误的字母数量。</li>
+                <li>点击已经提交的字母格可以循环切换颜色（用于辅助推理）；右键点击，或在手机上长按，可以锁定当前标记。</li>
+                <li>点击白旗可以投降。本局会被计为失败，并立即公布正确答案。</li>
+            </ol>
+            <p class="help-note">当前游戏进度和统计数据只会保存在这个浏览器中。</p>
         </div>
     </dialog>
 
@@ -710,11 +849,18 @@
         let wordLength = 5;     // Length of the target words
         let maxGuesses = 10;    // Maximum number of guesses allowed
         const SAVE_KEY = 'hardle.save.v1';
-        const STATS_KEY = 'hardle.stats.v1';
+        const STATS_KEY = 'hardle.stats.v2';
         const THEME_KEY = 'hardle.theme.v1';
 
         function defaultStats() {
-            return { played: 0, wins: 0, currentStreak: 0, bestStreak: 0, history: [] };
+            return {
+                played: 0,
+                wins: 0,
+                currentStreak: 0,
+                bestStreak: 0,
+                winDistribution: Array(10).fill(0),
+                history: []
+            };
         }
 
         function readJson(key, fallback) {
@@ -795,21 +941,46 @@
             return true;
         }
 
-        function recordResult(won) {
+        function recordResult(won, surrendered = false) {
             const stats = readJson(STATS_KEY, defaultStats());
             stats.played = (stats.played || 0) + 1;
             stats.wins = (stats.wins || 0) + (won ? 1 : 0);
             stats.currentStreak = won ? (stats.currentStreak || 0) + 1 : 0;
             stats.bestStreak = Math.max(stats.bestStreak || 0, stats.currentStreak);
+            if (won) stats.winDistribution[currentRow]++;
             stats.history = Array.isArray(stats.history) ? stats.history : [];
             stats.history.unshift({
+                id: typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
                 won,
+                surrendered,
                 word: targetWord,
-                guesses: won ? currentRow + 1 : maxGuesses,
-                date: new Date().toISOString()
+                guesses: won ? currentRow + 1 : (surrendered ? currentRow : maxGuesses),
+                date: new Date().toISOString(),
+                details: captureGameDetails(won, surrendered)
             });
-            stats.history = stats.history.slice(0, 20);
             localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+        }
+
+        function captureGameDetails(won, surrendered) {
+            const rowLimit = won ? currentRow + 1 : (surrendered ? Math.min(currentRow + 1, maxGuesses) : maxGuesses);
+            const guesses = [];
+
+            for (let row = 0; row < rowLimit; row++) {
+                const letters = gameBoard[row] || [];
+                if (!letters.some(Boolean)) continue;
+                const complete = letters.length === wordLength && letters.every(Boolean);
+                const score = complete ? calculateScore(letters.join(''), targetWord) : null;
+                guesses.push({
+                    tiles: letters.map((letter, col) => ({
+                        letter,
+                        color: manualColors.get(`${row}-${col}`) || null,
+                        locked: lockedTiles.has(`${row}-${col}`)
+                    })),
+                    score
+                });
+            }
+
+            return { guesses };
         }
 
         function showHistory() {
@@ -818,21 +989,139 @@
             document.getElementById('statWinRate').textContent = `${stats.played ? Math.round((stats.wins || 0) / stats.played * 100) : 0}%`;
             document.getElementById('statStreak').textContent = stats.currentStreak || 0;
             document.getElementById('statBest').textContent = stats.bestStreak || 0;
+            renderDistribution(stats);
 
+            renderHistoryList(stats);
+            setStatsTab('distribution');
+            document.getElementById('statsDialog').showModal();
+        }
+
+        function setStatsTab(tabName) {
+            document.querySelectorAll('[data-stats-tab]').forEach(button => {
+                const active = button.dataset.statsTab === tabName;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-selected', active);
+            });
+            document.getElementById('distributionPanel').hidden = tabName !== 'distribution';
+            document.getElementById('historyPanel').hidden = tabName !== 'history';
+        }
+
+        function renderHistoryList(stats) {
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '';
             const history = Array.isArray(stats.history) ? stats.history : [];
             if (!history.length) {
-                historyList.innerHTML = '<li class="history-empty">No completed games yet</li>';
-            } else {
-                history.forEach(game => {
-                    const item = document.createElement('li');
-                    const date = new Date(game.date).toLocaleDateString();
-                    item.innerHTML = `<span>${game.won ? 'Won' : 'Lost'} · <strong>${game.word}</strong></span><span>${game.guesses}/${maxGuesses} · ${date}</span>`;
-                    historyList.appendChild(item);
-                });
+                historyList.innerHTML = '<li class="history-empty">暂无已完成的游戏</li>';
+                return;
             }
-            document.getElementById('statsDialog').showModal();
+
+            history.forEach(game => {
+                const item = document.createElement('li');
+                const entry = document.createElement('details');
+                entry.className = 'history-entry';
+
+                const summary = document.createElement('summary');
+                const resultLabel = game.won ? '胜利' : (game.surrendered ? '投降' : '失败');
+                const date = new Date(game.date).toLocaleDateString();
+                const rounds = game.won ? `${game.guesses} 轮猜中` : resultLabel;
+                summary.innerHTML = `<span class="history-summary-main">${resultLabel} · <strong>${game.word}</strong></span><span class="history-summary-meta">${rounds} · ${date}</span>`;
+                entry.appendChild(summary);
+
+                const body = document.createElement('div');
+                body.className = 'history-details';
+                const guesses = game.details?.guesses;
+                if (Array.isArray(guesses)) {
+                    const markerNote = document.createElement('p');
+                    markerNote.className = 'history-marker-note';
+                    markerNote.textContent = '字母格颜色是玩家当时的手动标记；右侧绿、黄数字方块是系统给出的实际计分。';
+                    body.appendChild(markerNote);
+                    guesses.forEach(guess => {
+                        const guessRow = document.createElement('div');
+                        guessRow.className = 'history-guess';
+                        guess.tiles.forEach(tileData => {
+                            const tile = document.createElement('span');
+                            tile.className = `history-tile${tileData.color ? ` ${tileData.color}` : ''}${tileData.locked ? ' locked' : ''}`;
+                            tile.textContent = tileData.letter || '';
+                            if (tileData.locked) tile.title = '已锁定';
+                            guessRow.appendChild(tile);
+                        });
+                        if (guess.score) {
+                            const score = document.createElement('span');
+                            score.className = 'history-score';
+                            const correctScore = document.createElement('span');
+                            correctScore.className = 'history-score-box correct';
+                            correctScore.textContent = guess.score.correct;
+                            correctScore.title = `绿色 ${guess.score.correct}`;
+                            const presentScore = document.createElement('span');
+                            presentScore.className = 'history-score-box present';
+                            presentScore.textContent = guess.score.present;
+                            presentScore.title = `黄色 ${guess.score.present}`;
+                            score.append(correctScore, presentScore);
+                            guessRow.appendChild(score);
+                        }
+                        body.appendChild(guessRow);
+                    });
+
+                    const clearButton = document.createElement('button');
+                    clearButton.className = 'history-detail-clear';
+                    clearButton.textContent = '清除猜词详情';
+                    clearButton.addEventListener('click', () => clearHistoryDetails(game.id));
+                    body.appendChild(clearButton);
+                } else {
+                    body.innerHTML = '<p class="history-detail-cleared">猜词详情已清除，仅保留战绩。</p>';
+                }
+
+                entry.appendChild(body);
+                item.appendChild(entry);
+                historyList.appendChild(item);
+            });
+        }
+
+        function clearHistoryDetails(gameId) {
+            const stats = readJson(STATS_KEY, defaultStats());
+            const game = stats.history.find(item => item.id === gameId);
+            if (!game || !game.details) return;
+            delete game.details;
+            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+            renderHistoryList(stats);
+            showMessage('该局猜词详情已清除，战绩仍保留', 'success');
+        }
+
+        function renderDistribution(stats) {
+            const chart = document.getElementById('distributionChart');
+            const losses = Math.max(0, (stats.played || 0) - (stats.wins || 0));
+            const values = [...stats.winDistribution, losses];
+            const largest = Math.max(1, ...values);
+            chart.innerHTML = '';
+
+            values.forEach((count, index) => {
+                const isLoss = index === maxGuesses;
+                const row = document.createElement('div');
+                row.className = `distribution-row${isLoss ? ' loss' : ''}`;
+                row.setAttribute('aria-label', isLoss ? `失败 ${count} 次` : `第 ${index + 1} 轮获胜 ${count} 次`);
+
+                const label = document.createElement('span');
+                label.className = 'distribution-label';
+                label.textContent = isLoss ? '失败' : `${index + 1} 轮`;
+
+                const track = document.createElement('div');
+                track.className = 'distribution-track';
+                const bar = document.createElement('div');
+                bar.className = 'distribution-bar';
+                bar.style.width = count ? `${Math.max(3, count / largest * 100)}%` : '0';
+                track.appendChild(bar);
+
+                const countLabel = document.createElement('span');
+                countLabel.className = 'distribution-count';
+                countLabel.textContent = count;
+
+                row.append(label, track, countLabel);
+                chart.appendChild(row);
+            });
+        }
+
+        function showHelp() {
+            document.getElementById('helpDialog').showModal();
         }
 
         function initGame(tryRestore = false) {
@@ -877,7 +1166,7 @@
                 .catch(err => {
                     console.error(`Failed to load word list from ${url}:`, err);
                     callback(fallback);
-                    showMessage('Using the built-in word list', 'error');
+                    showMessage('Using the built-in word list');
                 });
         }
 
@@ -1452,6 +1741,22 @@
             
         }
 
+        function surrender() {
+            if (gameOver) return;
+
+            gameOver = true;
+            selectedCol = -1;
+            document.querySelector('.tile.selected')?.classList.remove('selected');
+            recordResult(false, true);
+            saveGame();
+
+            document.getElementById('solution').textContent = `Correct word: ${targetWord}`;
+            showMessage(`You surrendered. The word was: ${targetWord}`, 'error');
+            document.body.style.transition = 'background-color 0.5s';
+            document.body.style.backgroundColor = '#b00020';
+            setTimeout(() => document.body.style.backgroundColor = '', 700);
+        }
+
         // function showMessage(text, type = '') {
         //     const messageEl = document.getElementById('message');
         //     messageEl.textContent = text;
@@ -1494,13 +1799,20 @@
         document.getElementById('statsDialog').addEventListener('click', (event) => {
             if (event.target === event.currentTarget) event.currentTarget.close();
         });
+        document.querySelectorAll('[data-stats-tab]').forEach(button => {
+            button.addEventListener('click', () => setStatsTab(button.dataset.statsTab));
+        });
+        document.getElementById('helpClose').addEventListener('click', () => document.getElementById('helpDialog').close());
+        document.getElementById('helpDialog').addEventListener('click', (event) => {
+            if (event.target === event.currentTarget) event.currentTarget.close();
+        });
         document.getElementById('clearDataButton').addEventListener('click', () => {
             if (!confirm('Clear the current game and all statistics?')) return;
             localStorage.removeItem(SAVE_KEY);
             localStorage.removeItem(STATS_KEY);
             document.getElementById('statsDialog').close();
             initGame(false);
-            showMessage('Save and statistics cleared');
+            showMessage('Save and statistics cleared', 'success');
         });
 
         // Event listeners
